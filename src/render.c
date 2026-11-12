@@ -54,6 +54,17 @@ void r_put_pixel(uint32_t x, uint32_t y, r_Color color){
   render_context->framebuffer[y * render_context->width + x] = color;
 }
 
+void r_fade(uint8_t factor){
+  size_t n = (size_t)render_context->size;
+  for (size_t i = 0; i < n; i++) {
+    uint32_t c = render_context->framebuffer[i];
+    uint32_t r = (((c >> 16) & 0xFF) * factor) >> 8;
+    uint32_t g = (((c >>  8) & 0xFF) * factor) >> 8;
+    uint32_t b = (( c        & 0xFF) * factor) >> 8;
+    render_context->framebuffer[i] = 0xFF000000u | (r << 16) | (g << 8) | b;
+  }
+}
+
 void r_clear(r_Color color){
   for(uint32_t i = 0; i < render_context->size; i++)
     render_context->framebuffer[i] = color;

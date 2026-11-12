@@ -1,0 +1,11 @@
+#ifndef STARFIELD_H
+#define STARFIELD_H
+
+#define STARFIELD_N 3500
+#define STARFIELD_SPEED 1.f
+#define STARFIELD_FOCAL 600.0f
+#define STARFIELD_Z_NEAR 0.1f
+#define STARFIELD_Z_FAR 4000.f
+#define STARFIELD_SPREAD 2000.0f
+
+#endif

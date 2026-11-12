@@ -53,12 +53,14 @@ void generate_fire_palette(uint32_t out[PALETTE_SIZE]){
 
 void init(Module *self){
   FireState *fs = calloc(1, sizeof(FireState));
+  if (!fs)
+    return;
   fs->w = self->w;
   fs->h = self->h;
   fs->fire_size = fs->w * fs->h;
   fs->fire_grid = calloc(fs->fire_size, sizeof(uint32_t));
   generate_fire_palette(fs->palette);
-  
+
   for(uint32_t x = 0; x < fs->w; x++)
     fs->fire_grid[(fs->h - 1) * fs->w + x] = PALETTE_SIZE - 1;
 
@@ -68,19 +70,15 @@ void init(Module *self){
 void update(Module *self){
   FireState *fs = self->state;
   for(uint32_t x = 0; x < fs->w; x++){
-    for(uint32_t y = 0; y < fs->h; y++){
+    for(uint32_t y = 1; y < fs->h; y++){
       uint32_t src = y * fs->w + x;
-      uint32_t rand_idx = (uint32_t)rand() % 4;
-      int32_t dst = (int32_t)(src - fs->w);
-      int32_t dst_x = (int32_t)(src % fs->w) - (int32_t)rand_idx + 1;
-      if (dst < 0 || dst_x < 0 || (uint32_t)dst_x >= fs->w)
-        continue;
-      else{
-        dst = dst - (int32_t)(src % fs->w) + (int32_t)dst_x;
-        uint8_t src_val = fs->fire_grid[src];
-        uint8_t decay = ((uint32_t)rand() % 100 < 15) ? 1 : 0;
-        fs->fire_grid[dst] = (src_val > decay) ? (src_val - decay) : 0;
-      }
+      uint8_t src_val = fs->fire_grid[src];
+
+      int32_t shift = (int32_t)(rand() % 5) - 2;
+      int32_t dst_x = ((int32_t)x + shift + (int32_t)fs->w) % (int32_t)fs->w;
+      uint32_t dst = (y - 1) * fs->w + (uint32_t)dst_x;
+      uint8_t cool = ((uint32_t)rand() % 100 < 15) ? 1 : 0;
+      fs->fire_grid[dst] = (src_val > cool) ? (src_val - cool) : 0;
     }
   }
   const uint32_t SEED_ROWS = 3;
@@ -117,6 +115,8 @@ void destroy(Module *self){
 
 Module *create_module(uint32_t width, uint32_t height){
   Module *m = calloc(1, sizeof(Module));
+  if (!m)
+    return NULL;
   m->name = "doom-fire";
   m->w = width;
   m->h = height;
