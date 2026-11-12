@@ -14,6 +14,8 @@ int main() {
       if (event.type == SDL_EVENT_QUIT)
         running = 0;
     }
+    r_clear(0x0);
+    r_put_pixel(100, 100, 0xFFFFFF);
     r_render();
   }
 

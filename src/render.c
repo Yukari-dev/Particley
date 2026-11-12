@@ -6,14 +6,14 @@ typedef struct {
   SDL_Window *window;
   SDL_Renderer *renderer;
   SDL_Texture *render_texture;
-  uint32_t width, height;
+  uint32_t width, height, size;
   uint32_t *framebuffer;
   double fps;
 } RenderContext;
 
 static RenderContext *render_context = NULL;
 
-int r_init(uint32_t width, uint32_t height, WindowFlags flags, const char *title){
+int r_init(uint32_t width, uint32_t height, r_WindowFlags flags, const char *title){
   if (!SDL_Init(SDL_INIT_VIDEO)){
     ERROR("Failed to Initialize SDL");
     return 1;
@@ -23,6 +23,7 @@ int r_init(uint32_t width, uint32_t height, WindowFlags flags, const char *title
   render_context = (RenderContext*)malloc(sizeof(RenderContext));
   render_context->width = width;
   render_context->height = height;
+  render_context->size = width * height;
   render_context->framebuffer = malloc(sizeof(uint32_t) * (width * height));
   render_context->fps = 0;
   render_context->window = SDL_CreateWindow(title, width, height, flags);
@@ -45,6 +46,15 @@ int r_init(uint32_t width, uint32_t height, WindowFlags flags, const char *title
   INFO("SDL Render Texture is Created successfully");
 
   return 0;
+}
+
+void r_put_pixel(int x, int y, r_Color color){
+  render_context->framebuffer[y * render_context->width + x] = color;
+}
+
+void r_clear(r_Color color){
+  for(int i = 0; i < render_context->size; i++)
+    render_context->framebuffer[i] = color;
 }
 
 void r_render(){
