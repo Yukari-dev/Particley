@@ -26,7 +26,7 @@ int r_init(uint32_t width, uint32_t height, r_WindowFlags flags, const char *tit
   render_context->size = width * height;
   render_context->framebuffer = malloc(sizeof(uint32_t) * (width * height));
   render_context->fps = 0;
-  render_context->window = SDL_CreateWindow(title, width, height, flags);
+  render_context->window = SDL_CreateWindow(title, (int)width, (int)height, flags);
   if (!render_context->window){
     ERROR("Failed to create SDL Window");
     return 1;
@@ -38,7 +38,7 @@ int r_init(uint32_t width, uint32_t height, r_WindowFlags flags, const char *tit
     return 1;
   }
   INFO("SDL Renderer is Created successfully");
-  render_context->render_texture = SDL_CreateTexture(render_context->renderer, SDL_PIXELFORMAT_XRGB8888, SDL_TEXTUREACCESS_STREAMING, width, height);
+  render_context->render_texture = SDL_CreateTexture(render_context->renderer, SDL_PIXELFORMAT_XRGB8888, SDL_TEXTUREACCESS_STREAMING, (int)width, (int)height);
   if (!render_context->render_texture){
     ERROR("Failed to create SDL Render Texture");
     return 1;
@@ -48,17 +48,19 @@ int r_init(uint32_t width, uint32_t height, r_WindowFlags flags, const char *tit
   return 0;
 }
 
-void r_put_pixel(int x, int y, r_Color color){
+void r_put_pixel(uint32_t x, uint32_t y, r_Color color){
+  if (x >= render_context->width || y >= render_context->height)
+    return;
   render_context->framebuffer[y * render_context->width + x] = color;
 }
 
 void r_clear(r_Color color){
-  for(int i = 0; i < render_context->size; i++)
+  for(uint32_t i = 0; i < render_context->size; i++)
     render_context->framebuffer[i] = color;
 }
 
 void r_render(){
-  SDL_UpdateTexture(render_context->render_texture, NULL, render_context->framebuffer, render_context->width * sizeof(uint32_t));
+  SDL_UpdateTexture(render_context->render_texture, NULL, render_context->framebuffer, (int)(render_context->width * sizeof(uint32_t)));
   SDL_RenderClear(render_context->renderer);
   SDL_RenderTexture(render_context->renderer, render_context->render_texture, NULL, NULL);
   SDL_RenderPresent(render_context->renderer);
