@@ -18,13 +18,23 @@ int main() {
 
   uint8_t running = 1;
   SDL_Event event;
+  double dt = 0.0;
+  Uint64 NOW = SDL_GetPerformanceCounter();
+  Uint64 LAST = 0;
+  double frequency = SDL_GetPerformanceFrequency();
   while (running){
+    LAST = NOW;
+    NOW = SDL_GetPerformanceCounter();
+    dt = (double)(NOW - LAST) / frequency;
+    if (dt > 0.25)
+      dt = 0.25;
+    printf("dt: %f, fps: %.0f\n", dt, 1 / dt);
     while (SDL_PollEvent(&event)){
       if (event.type == SDL_EVENT_QUIT)
         running = false;
       mod->handle_event(mod, &event);
     }
-    mod->update(mod);
+    mod->update(mod, dt);
     mod->render(mod);
     r_render();
   }

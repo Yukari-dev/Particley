@@ -67,7 +67,8 @@ void init(Module *self){
   self->state = fs;
 }
 
-void update(Module *self){
+void update(Module *self, double dt){
+  (void)dt;
   FireState *fs = self->state;
   for(uint32_t x = 0; x < fs->w; x++){
     for(uint32_t y = 1; y < fs->h; y++){

@@ -5,7 +5,7 @@
 typedef struct Module{
   const char *name;
   void (*init)(struct Module *self);
-  void (*update)(struct Module *self);
+  void (*update)(struct Module *self, double dt);
   void (*render)(struct Module *self);
   void (*handle_event)(struct Module *self, const SDL_Event *event);
   void (*destroy)(struct Module *self);

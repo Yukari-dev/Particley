@@ -54,6 +54,16 @@ void r_put_pixel(uint32_t x, uint32_t y, r_Color color){
   render_context->framebuffer[y * render_context->width + x] = color;
 }
 
+void r_put_circle(uint32_t x, uint32_t y, float radius, r_Color color){
+  float radius_sqrt = radius * radius;
+  for(int dy = -radius; dy <= radius; dy++){
+    for(int dx = -radius; dx <= radius; dx++){
+      if (dx*dx + dy*dy > radius_sqrt) continue;
+      r_put_pixel(dx + x, dy + y, color);
+    }
+  }
+}
+
 void r_fade(uint8_t factor){
   size_t n = (size_t)render_context->size;
   for (size_t i = 0; i < n; i++) {

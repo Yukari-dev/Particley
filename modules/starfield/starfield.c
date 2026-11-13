@@ -73,7 +73,7 @@ void init(Module *self){
   self->state = ss;
 }
 
-void update(Module *self){
+void update(Module *self, double dt){
   StarfieldState *s = self->state;
 
   float speed = s->speed * s->warp;
@@ -94,12 +94,13 @@ void update(Module *self){
   } else {
     s->warp = 1.0f;
   }
+  (void)dt;
 }
 
 void render(Module *self){
   StarfieldState *s = self->state;
 
-  r_fade(100);
+  r_fade(255);
 
   for(int i = 0; i < s->n; i++){
     Star *star = &s->stars[i];
